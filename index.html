@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top-Down Racer</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+  }
+  canvas {
+    display: block;
+  }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const carWidth = 40;
+  const carHeight = 60;
+  let carX = canvas.width / 2 - carWidth / 2;
+  let carY = canvas.height - carHeight - 10;
+  const carSpeed = 3;
+
+  function drawCar() {
+    ctx.fillStyle = "blue";
+    ctx.fillRect(carX, carY, carWidth, carHeight);
+  }
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function updateGameArea() {
+    clearCanvas();
+    drawCar();
+
+    // Touch controls
+    if (touchX && touchY) {
+      const deltaX = touchX - carX - carWidth / 2;
+      const deltaY = touchY - carY - carHeight / 2;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+      if (distance > carSpeed) {
+        const angle = Math.atan2(deltaY, deltaX);
+        carX += carSpeed * Math.cos(angle);
+        carY += carSpeed * Math.sin(angle);
+      } else {
+        carX = touchX - carWidth / 2;
+        carY = touchY - carHeight / 2;
+      }
+    }
+
+    requestAnimationFrame(updateGameArea);
+  }
+
+  let touchX, touchY;
+  canvas.addEventListener("touchstart", (e) => {
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
+  });
+  canvas.addEventListener("touchmove", (e) => {
+    touchX = e.touches[0].clientX;
+    touchY = e.touches[0].clientY;
+    e.preventDefault();
+  });
+  canvas.addEventListener("touchend", () => {
+    touchX = null;
+    touchY = null;
+  });
+
+  updateGameArea();
+</script>
+</body>
+</html>
